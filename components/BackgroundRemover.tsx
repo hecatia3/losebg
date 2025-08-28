@@ -10,7 +10,7 @@ export default function BackgroundRemover() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState('')
 
-  const handleFileSelect = (event) => {
+  const handleFileSelect = (event: any) => {
     const file = event.target.files[0]
     if (!file) return
 
