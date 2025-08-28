@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react'
 import { Upload, Download, Loader2, X } from 'lucide-react'
 
