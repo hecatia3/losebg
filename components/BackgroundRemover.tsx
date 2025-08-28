@@ -2,16 +2,17 @@
 
 import { useState } from 'react'
 import { Upload, Download, Loader2, X } from 'lucide-react'
+import Image from 'next/image'
 
 export default function BackgroundRemover() {
-  const [selectedFile, setSelectedFile] = useState(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [previewUrl, setPreviewUrl] = useState('')
   const [processedUrl, setProcessedUrl] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [error, setError] = useState('')
 
-  const handleFileSelect = (event: any) => {
-    const file = event.target.files[0]
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
     if (!file) return
 
     // Validate file type
@@ -32,7 +33,11 @@ export default function BackgroundRemover() {
     
     // Create preview
     const reader = new FileReader()
-    reader.onload = (e) => setPreviewUrl(e.target.result)
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        setPreviewUrl(e.target.result as string)
+      }
+    }
     reader.readAsDataURL(file)
   }
 
@@ -59,7 +64,7 @@ export default function BackgroundRemover() {
       const processedImageUrl = URL.createObjectURL(blob)
       setProcessedUrl(processedImageUrl)
 
-    } catch (err) {
+    } catch (err: any) {
       setError(`Failed to process image: ${err.message}`)
     } finally {
       setIsProcessing(false)
@@ -83,7 +88,7 @@ export default function BackgroundRemover() {
     setProcessedUrl('')
     setError('')
     // Reset file input
-    const fileInput = document.getElementById('file-input')
+    const fileInput = document.getElementById('file-input') as HTMLInputElement | null
     if (fileInput) fileInput.value = ''
   }
 
@@ -149,9 +154,11 @@ export default function BackgroundRemover() {
               <div className="space-y-4">
                 <h3 className="text-lg font-medium text-gray-700">Original</h3>
                 <div className="border rounded-lg overflow-hidden bg-gray-50">
-                  <img
+                  <Image
                     src={previewUrl}
                     alt="Original"
+                    width={500}
+                    height={500}
                     className="w-full h-64 object-contain"
                   />
                 </div>
@@ -165,9 +172,11 @@ export default function BackgroundRemover() {
                 <div className="border rounded-lg overflow-hidden bg-transparent bg-opacity-50" 
                      style={{backgroundImage: 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)', backgroundSize: '20px 20px', backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'}}>
                   {processedUrl ? (
-                    <img
+                    <Image
                       src={processedUrl}
                       alt="Processed"
+                      width={500}
+                      height={500}
                       className="w-full h-64 object-contain"
                     />
                   ) : (
@@ -247,3 +256,4 @@ export default function BackgroundRemover() {
     </div>
   )
 }
+
